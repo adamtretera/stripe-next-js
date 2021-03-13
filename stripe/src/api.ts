@@ -14,6 +14,7 @@ app.post('/test', (req: Request, res: Response) => {
     res.status(200).send({ with_tax: amount * 7 });
 });
 import {createStripeCheckoutSession} from "./checkout";
+import { handleStripeWebhook} from "./webhooks";
 app.post("/checkouts/",runAsync( async ({body}:Request,res:Response) =>{
     res.send(
     await createStripeCheckoutSession(body.line_items)
@@ -33,3 +34,10 @@ function runAsync(callback:Function){
         callback(req,res,next).catch(next)
     }
 }
+app.use(cors({origin:true}))
+app.use(
+    express.json({
+        verify: (req, res, buffer) => (req['rawBody'] = buffer),
+    })
+);
+app.post("/hooks",runAsync(handleStripeWebhook))
