@@ -1,19 +1,25 @@
-const API = "http://localhost:3001"
 import { auth } from './firebase';
-export async function fetchFromApi(endpointURL,opts){
-  const {method,body} = {method:"POST",body:null}
-  const user = auth.currentUser
-  const token = user && (await user.getIdToken())
+const API = 'http://localhost:3001';
+// const API = 'http://localhost:3333';
 
-  const res= await fetch(`${API}/${endpointURL}`,{
+/**
+ * A helper function to fetch data from your API.
+ * It sets the Firebase auth token on the request.
+ */
+export async function fetchFromAPI(endpointURL, opts) {
+  const { method, body } = { method: 'POST', body: null, ...opts };
+
+  const user = auth.currentUser;
+  const token = user && (await user.getIdToken());
+
+  const res = await fetch(`${API}/${endpointURL}`, {
     method,
-    ...(body &&{body:JSON.stringify(body)}),
-    headers:{
-      "Content-Type":"application/json",
+    ...(body && { body: JSON.stringify(body) }),
+    headers: {
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
+    },
+  });
 
-    }
-
-  })
-  return res.json()
+  return res.json();
 }

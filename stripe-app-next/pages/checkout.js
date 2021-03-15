@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {useStripe} from "@stripe/react-stripe-js";
-import {fetchFromApi} from "./api/helpers";
+import {fetchFromAPI} from "./api/helpers";
 
 
 function Checkout(props) {

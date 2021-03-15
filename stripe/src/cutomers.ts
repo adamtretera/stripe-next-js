@@ -4,6 +4,34 @@ import Stripe from "stripe";
 
 
 
+
+export async function createSetupIntent(userId: string){
+    const customer = await getOrCreateCustomer(userId)
+    return stripe.setupIntents.create({
+        customer:customer.id,
+    })
+}
+
+export async function listPaymentMethods(userId:string){
+    const customer = await getOrCreateCustomer(userId)
+    return stripe.paymentMethods.list({
+        customer:customer.id,
+        type:"card"
+        }
+
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
 export async function getOrCreateCustomer(userId:string,params?:Stripe.CustomerCreateParams){
     const userSnapshot= await db.collection("user").doc(userId).get()
 
