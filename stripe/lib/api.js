@@ -11,6 +11,7 @@ const checkout_1 = require("./checkout");
 const webhooks_1 = require("./webhooks");
 const cors_1 = __importDefault(require("cors"));
 const cutomers_1 = require("./cutomers");
+const billing_1 = require("./billing");
 exports.app = express_1.default();
 exports.app.use(express_1.default.json());
 exports.app.use(cors_1.default({ origin: true }));
@@ -40,6 +41,24 @@ exports.app.get('/wallet', runAsync(async (req, res) => {
     const user = validateUser(req);
     const wallet = await cutomers_1.listPaymentMethods(user.uid);
     res.send(wallet.data);
+}));
+// add sub
+exports.app.post('/subscriptions/', runAsync(async (req, res) => {
+    const user = validateUser(req);
+    const { plan, payment_method } = req.body;
+    const subscription = await billing_1.createSubscription(user.uid, plan, payment_method);
+    res.send(subscription);
+}));
+//get all subs
+exports.app.get("/subscriptions/", runAsync(async (req, res) => {
+    const user = validateUser(req);
+    const subscriptions = await billing_1.listSubscriptions(user.uid);
+    res.send(subscriptions.data);
+}));
+//cancel sub
+exports.app.patch('/subscriptions/:id', runAsync(async (req, res) => {
+    const user = validateUser(req);
+    res.send(await billing_1.cancelSubscription(user.uid, req.params.id));
 }));
 function runAsync(callback) {
     return (req, res, next) => {

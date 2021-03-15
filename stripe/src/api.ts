@@ -5,6 +5,7 @@ import {createStripeCheckoutSession} from "./checkout";
 import { handleStripeWebhook} from "./webhooks";
 import cors from "cors"
 import {createSetupIntent, listPaymentMethods} from "./cutomers";
+import {cancelSubscription, createSubscription, listSubscriptions} from "./billing";
 
 export const app = express()
 
@@ -64,6 +65,33 @@ app.get(
     })
 );
 
+
+// add sub
+app.post(
+    '/subscriptions/',
+    runAsync(async (req: Request, res: Response) => {
+        const user = validateUser(req);
+        const { plan, payment_method } = req.body;
+        const subscription = await createSubscription(user.uid, plan, payment_method);
+        res.send(subscription);
+    })
+);
+//get all subs
+app.get("/subscriptions/",    runAsync(async (req: Request, res: Response) => {
+    const user = validateUser(req);
+    const subscriptions = await listSubscriptions(user.uid)
+    res.send(subscriptions.data);
+}))
+//cancel sub
+app.patch(
+    '/subscriptions/:id',
+    runAsync(async (req: Request, res: Response) => {
+        const user = validateUser(req);
+        res.send(await cancelSubscription(user.uid, req.params.id));
+    })
+);
+
+
 function runAsync(callback:Function){
     return (req:Request,res:Response,next:NextFunction)=>{
         callback(req,res,next).catch(next)
@@ -98,3 +126,4 @@ function validateUser(req: Request) {
 
     return user;
 }
+

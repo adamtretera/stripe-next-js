@@ -17,6 +17,7 @@ function Payments() {
         setAmount(validAmount);
 
         // Make the API Request
+
         const pi = await fetchFromAPI('payments', { body: { amount: validAmount } });
         setPaymentIntent(pi);
     };
