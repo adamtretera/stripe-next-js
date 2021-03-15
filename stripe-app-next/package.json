@@ -10,9 +10,11 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.13.1",
+    "firebase": "^8.3.0",
     "next": "10.0.8",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "reactfire": "^3.0.0-rc.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.5",

@@ -15,6 +15,7 @@ exports.app.post('/test', (req, res) => {
     res.status(200).send({ with_tax: amount * 7 });
 });
 const checkout_1 = require("./checkout");
+const webhooks_1 = require("./webhooks");
 exports.app.post("/checkouts/", runAsync(async ({ body }, res) => {
     res.send(await checkout_1.createStripeCheckoutSession(body.line_items));
 }));
@@ -26,4 +27,9 @@ function runAsync(callback) {
         callback(req, res, next).catch(next);
     };
 }
+exports.app.use(cors_1.default({ origin: true }));
+exports.app.use(express_1.default.json({
+    verify: (req, res, buffer) => (req['rawBody'] = buffer),
+}));
+exports.app.post("/hooks", runAsync(webhooks_1.handleStripeWebhook));
 //# sourceMappingURL=api.js.map

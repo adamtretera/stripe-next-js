@@ -26,6 +26,6 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
+stripe/service-account.json
 # vercel
 .vercel
