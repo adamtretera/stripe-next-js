@@ -1,12 +1,14 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { fetchFromAPI } from './helpers';
+
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useUser, AuthCheck } from 'reactfire';
 
-import { db } from './firebase';
+
 import { SignIn, SignOut } from './Customers';
 
-// Shows user document in Firestore
+import {fetchFromAPI} from "./api/helpers";
+import {db} from "./api/firebase";
+
 function UserData(props) {
 
     const [data, setData] = useState({});
@@ -39,11 +41,11 @@ function SubscribeToPlan(props) {
 
     // Get current subscriptions on mount
     useEffect(() => {
-        getSubscrptions();
+        getSubscriptions();
     }, [user]);
 
     // Fetch current subscriptions from the API
-    const getSubscrptions = async () => {
+    const getSubscriptions = async () => {
         if (user) {
             const subs = await fetchFromAPI('subscriptions', { method: 'GET' });
             setSubscriptions(subs);
@@ -55,7 +57,7 @@ function SubscribeToPlan(props) {
         setLoading(true);
         await fetchFromAPI('subscriptions/' + id, { method: 'PATCH' });
         alert('canceled!');
-        await getSubscrptions();
+        await getSubscriptions();
         setLoading(false);
     };
 
@@ -108,7 +110,7 @@ function SubscribeToPlan(props) {
 
             // success
             alert('You are subscribed!');
-            getSubscrptions();
+            getSubscriptions();
         }
 
         setLoading(false);
@@ -117,21 +119,41 @@ function SubscribeToPlan(props) {
 
     return (
         <>
+            <h2>Subscriptions</h2>
+            <p>
+                Subscribe a user to a recurring plan, process the payment, and sync with
+                Firestore in realtime.
+            </p>
             <AuthCheck fallback={<SignIn />}>
-                <div>
+                <div className="well">
+                    <h2>Firestore Data</h2>
+                    <p>User's data in Firestore.</p>
                     {user?.uid && <UserData user={user} />}
                 </div>
 
                 <hr />
 
-                <div>
+                <div className="well">
+                    <h3>Step 1: Choose a Plan</h3>
 
                     <button
+                        className={
+                            'btn ' +
+                            (plan === 'plan_HC2o83JbeowZnP'
+                                ? 'btn-primary'
+                                : 'btn-outline-primary')
+                        }
                         onClick={() => setPlan('plan_HC2o83JbeowZnP')}>
                         Choose Monthly $25/m
                     </button>
 
                     <button
+                        className={
+                            'btn ' +
+                            (plan === 'plan_HD6rlaovzAiM7B'
+                                ? 'btn-primary'
+                                : 'btn-outline-primary')
+                        }
                         onClick={() => setPlan('plan_HD6rlaovzAiM7B')}>
                         Choose Quarterly $50/q
                     </button>
@@ -142,15 +164,25 @@ function SubscribeToPlan(props) {
                 </div>
                 <hr />
 
-                <form onSubmit={handleSubmit} hidden={!plan}>
+                <form onSubmit={handleSubmit} className="well" hidden={!plan}>
+                    <h3>Step 2: Submit a Payment Method</h3>
+                    <p>Collect credit card details</p>
+                    <p>
+                        Normal Card: <code>4242424242424242</code>
+                    </p>
+                    <p>
+                        3D Secure Card: <code>4000002500003155</code>
+                    </p>
+
+                    <hr />
 
                     <CardElement />
-                    <button type="submit" disabled={loading}>
+                    <button className="btn btn-success" type="submit" disabled={loading}>
                         Subscribe & Pay
                     </button>
                 </form>
 
-                <div>
+                <div className="well">
                     <h3>Manage Current Subscriptions</h3>
                     <div>
                         {subscriptions.map((sub) => (
@@ -158,6 +190,7 @@ function SubscribeToPlan(props) {
                                 {sub.id}. Next payment of {sub.plan.amount} due{' '}
                                 {new Date(sub.current_period_end * 1000).toUTCString()}
                                 <button
+                                    className="btn btn-sm btn-danger"
                                     onClick={() => cancel(sub.id)}
                                     disabled={loading}>
                                     Cancel
@@ -167,7 +200,7 @@ function SubscribeToPlan(props) {
                     </div>
                 </div>
 
-                <div>
+                <div className="well">
                     <SignOut user={user} />
                 </div>
             </AuthCheck>

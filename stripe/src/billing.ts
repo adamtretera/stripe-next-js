@@ -2,46 +2,70 @@ import { stripe } from './';
 import { db } from './firebase';
 import Stripe from 'stripe';
 import { getOrCreateCustomer } from './cutomers';
-
 import { firestore } from 'firebase-admin';
 
+/**
+ * Attaches a payment method to the Stripe customer,
+ * subscribes to a Stripe plan, and saves the plan to Firestore
+ */
+export async function createSubscription(
+    userId: string,
+    plan: string,
+    payment_method: string
+) {
+    const customer = await getOrCreateCustomer(userId);
 
-export async function createSubscription( userId: string,
-                                          plan: string,
-                                          payment_method:string){
+    // Attach the  payment method to the customer
+    await stripe.paymentMethods.attach(payment_method, { customer: customer.id });
 
-const customer = await getOrCreateCustomer(userId)
+    // Set it as the default payment method
+    await stripe.customers.update(customer.id, {
+        invoice_settings: { default_payment_method: payment_method },
+    });
 
-    await stripe.paymentMethods.attach(payment_method,{customer:customer.id});
-await stripe.customers.update(customer.id,{
-    invoice_settings:{default_payment_method:payment_method},
-})
     const subscription = await stripe.subscriptions.create({
         customer: customer.id,
         items: [{ plan }],
         expand: ['latest_invoice.payment_intent'],
     });
 
-    const invoice = subscription.latest_invoice as Stripe.Invoice
-    const payment_intent = invoice.payment_intent as Stripe.PaymentIntent
-    if(payment_intent.status==="succeeded"){
-       await db.collection("users").doc(userId).set({
-           stripeCustomerId:customer.id,
-           activePlans: firestore.FieldValue.arrayUnion(plan)
-       },
-           {merge:true})
+
+    const invoice = subscription.latest_invoice as Stripe.Invoice;
+    const payment_intent = invoice.payment_intent as Stripe.PaymentIntent;
+
+    // Update the user's status
+    if (payment_intent.status === 'succeeded') {
+        await db
+            .collection('users')
+            .doc(userId)
+            .set(
+                {
+                    stripeCustomerId: customer.id,
+                    activePlans: firestore.FieldValue.arrayUnion(plan),
+                },
+                { merge: true }
+            );
     }
-    return subscription
+
+    return subscription;
 }
 
-export async function cancelSubscription(userId:string,subscriptionId:string){
-    const customer = await getOrCreateCustomer(userId)
-    if(customer.metadata.firebaseUID !==userId){
-        throw Error("Firebase UID does not match stripe account")
+/**
+ * Cancels an active subscription, syncs the data in Firestore
+ */
+export async function cancelSubscription(
+    userId: string,
+    subscriptionId: string
+) {
+    const customer = await getOrCreateCustomer(userId);
+    if (customer.metadata.firebaseUID !== userId) {
+        throw Error('Firebase UaID does not match Stripe Customer');
     }
-    const subscription = await stripe.subscriptions.del(subscriptionId)
-    //cancel on the end of the period
-    //const subscription = stripe.subscriptions.update(subscriptionId,{cancel_at_period_end:true})
+    const subscription = await stripe.subscriptions.del(subscriptionId);
+
+    // Cancel at end of period
+    // const subscription = stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
+
     if (subscription.status === 'canceled') {
         await db
             .collection('users')
@@ -51,53 +75,17 @@ export async function cancelSubscription(userId:string,subscriptionId:string){
             });
     }
 
-    return subscription
+    return subscription;
 }
-export async function listSubscriptions(userId:string){
-    const customer = await getOrCreateCustomer(userId)
+
+/**
+ * Returns all the subscriptions linked to a Firebase userID in Stripe
+ */
+export async function listSubscriptions(userId: string) {
+    const customer = await getOrCreateCustomer(userId);
     const subscriptions = await stripe.subscriptions.list({
         customer: customer.id,
+    });
 
-    })
-    return subscriptions
-}
-
-
-const webhookHandlers = {
-    'payment_intent.succeeded': async (data: Stripe.PaymentIntent) => {
-        // Add your business logic here
-    },
-    'payment_intent.payment_failed': async (data: Stripe.PaymentIntent) => {
-        // Add your business logic here
-    },
-    'customer.subscription.deleted': async (data: Stripe.Subscription) => {
-        const customer = await stripe.customers.retrieve( data.customer as string ) as Stripe.Customer;
-        const userId = customer.metadata.firebaseUID;
-        const userRef = db.collection('users').doc(userId);
-
-        await userRef
-            .update({
-                activePlans: firestore.FieldValue.arrayRemove(data.plan.id),
-            });
-    },
-    'customer.subscription.created': async (data: Stripe.Subscription) => {
-        const customer = await stripe.customers.retrieve( data.customer as string ) as Stripe.Customer;
-        const userId = customer.metadata.firebaseUID;
-        const userRef = db.collection('users').doc(userId);
-
-        await userRef
-            .update({
-                activePlans: firestore.FieldValue.arrayUnion(data.plan.id),
-            });
-    },
-    'invoice.payment_succeeded': async (data: Stripe.Invoice) => {
-        // Add your business logic here
-    },
-    'invoice.payment_failed': async (data: Stripe.Invoice) => {
-
-        const customer = await stripe.customers.retrieve( data.customer as string ) as Stripe.Customer;
-        const userSnapshot = await db.collection('users').doc(customer.metadata.firebaseUID).get();
-        await userSnapshot.ref.update({ status: 'PAST_DUE' });
-
-    }
-}
+    return subscriptions;
+};

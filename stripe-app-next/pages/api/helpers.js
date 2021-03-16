@@ -1,4 +1,6 @@
-import { auth } from './firebase';
+import {auth} from "./firebase";
+
+
 const API = 'http://localhost:3001';
 // const API = 'http://localhost:3333';
 

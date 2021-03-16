@@ -1,9 +1,10 @@
 import firebase from "firebase/app";
 import React, { useState, useEffect, Suspense } from 'react';
-import { fetchFromAPI } from './helpers';
+import { fetchFromAPI } from './api/helpers';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useUser, AuthCheck } from 'reactfire';
-import { auth, db } from './firebase';
+import {db, auth} from "./api/firebase";
+
 
 
 
