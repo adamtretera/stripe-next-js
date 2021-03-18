@@ -24,4 +24,4 @@ const firebaseAdmin = __importStar(require("firebase-admin"));
 firebaseAdmin.initializeApp();
 exports.db = firebaseAdmin.firestore();
 exports.auth = firebaseAdmin.auth();
-//# sourceMappingURL=firebase.js.map
+//# sourceMappingURL=firebase.ts.map
