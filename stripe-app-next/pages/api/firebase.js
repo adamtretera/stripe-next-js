@@ -10,8 +10,8 @@ export const firebaseConfig = {
     messagingSenderId: "282849225590",
     appId: "1:282849225590:web:29425b07317149c8576857"
 };
-
-firebase.initializeApp(firebaseConfig)
-
+if (firebase.apps.length === 0) {
+    firebase.initializeApp(firebaseConfig);
+}
 export const db = firebase.firestore();
 export const auth = firebase.auth();

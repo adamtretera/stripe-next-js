@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>cutomers.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../";
+    var thisFile = "stripe\\lib\\cutomers.js";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+      <div class="heading h1">
+        <a href="#sourcemappingurlcutomers.js.map">sourceMappingURL=cutomers.js.map</a>
+      </div>
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>cutomers.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-meta">"use strict"</span>;
+<span class="hljs-built_in">Object</span>.defineProperty(exports, <span class="hljs-string">"__esModule"</span>, { <span class="hljs-attr">value</span>: <span class="hljs-literal">true</span> });
+exports.getOrCreateCustomer = exports.listPaymentMethods = exports.createSetupIntent = <span class="hljs-keyword">void</span> <span class="hljs-number">0</span>;
+<span class="hljs-keyword">const</span> _1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./"</span>);
+<span class="hljs-keyword">const</span> firebase_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./firebase"</span>);
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Creates a SetupIntent used to save a credit card for later use</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSetupIntent</span>(<span class="hljs-params">userId</span>) </span>{
+    <span class="hljs-keyword">const</span> customer = <span class="hljs-keyword">await</span> getOrCreateCustomer(userId);
+    <span class="hljs-keyword">return</span> _1.stripe.setupIntents.create({
+        <span class="hljs-attr">customer</span>: customer.id,
+    });
+}
+exports.createSetupIntent = createSetupIntent;
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Returns all payment sources associated to the user</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">listPaymentMethods</span>(<span class="hljs-params">userId</span>) </span>{
+    <span class="hljs-keyword">const</span> customer = <span class="hljs-keyword">await</span> getOrCreateCustomer(userId);
+    <span class="hljs-keyword">return</span> _1.stripe.paymentMethods.list({
+        <span class="hljs-attr">customer</span>: customer.id,
+        <span class="hljs-attr">type</span>: <span class="hljs-string">'card'</span>,
+    });
+}
+exports.listPaymentMethods = listPaymentMethods;
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Gets the exsiting Stripe customer or creates a new record</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getOrCreateCustomer</span>(<span class="hljs-params">userId, params</span>) </span>{
+    <span class="hljs-keyword">const</span> userSnapshot = <span class="hljs-keyword">await</span> firebase_1.db.collection(<span class="hljs-string">'users'</span>).doc(userId).get();
+    <span class="hljs-keyword">const</span> { stripeCustomerId, email } = userSnapshot.data() || {};
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5"></a>
+</div>
+<p>If missing customerID, create it</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    <span class="hljs-keyword">if</span> (!stripeCustomerId) {
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6"></a>
+</div>
+<p>CREATE new customer</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">        <span class="hljs-keyword">const</span> customer = <span class="hljs-keyword">await</span> _1.stripe.customers.create(<span class="hljs-built_in">Object</span>.assign({ email, <span class="hljs-attr">metadata</span>: {
+                <span class="hljs-attr">firebaseUID</span>: userId
+            } }, params));
+        <span class="hljs-keyword">await</span> userSnapshot.ref.update({ <span class="hljs-attr">stripeCustomerId</span>: customer.id });
+        <span class="hljs-keyword">return</span> customer;
+    }
+    <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> _1.stripe.customers.retrieve(stripeCustomerId);
+    }
+}
+exports.getOrCreateCustomer = getOrCreateCustomer;
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap" id="sourcemappingurlcutomers.js.map">
+  <h1>
+    <a href="#sourcemappingurlcutomers.js.map" name="sourcemappingurlcutomers.js.map" class="pilcrow"></a>
+sourceMappingURL=cutomers.js.map
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"></pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

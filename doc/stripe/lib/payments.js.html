@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>payments.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../";
+    var thisFile = "stripe\\lib\\payments.js";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+      <div class="heading h1">
+        <a href="#sourcemappingurlpayments.js.map">sourceMappingURL=payments.js.map</a>
+      </div>
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>payments.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-meta">"use strict"</span>;
+<span class="hljs-built_in">Object</span>.defineProperty(exports, <span class="hljs-string">"__esModule"</span>, { <span class="hljs-attr">value</span>: <span class="hljs-literal">true</span> });
+exports.createPaymentIntentAndCharge = exports.createPaymentIntent = <span class="hljs-keyword">void</span> <span class="hljs-number">0</span>;
+<span class="hljs-keyword">const</span> _1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./"</span>);
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Create a Payment Intent with a specific amount</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createPaymentIntent</span>(<span class="hljs-params">amount</span>) </span>{
+    <span class="hljs-keyword">const</span> paymentIntent = <span class="hljs-keyword">await</span> _1.stripe.paymentIntents.create({
+        amount,
+        <span class="hljs-attr">currency</span>: <span class="hljs-string">'usd'</span>,
+    });
+    <span class="hljs-keyword">return</span> paymentIntent;
+}
+exports.createPaymentIntent = createPaymentIntent;
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Create a Payment Intent and attempt to charge right away,
+must have an existing customer with a saved card payment method on file.</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createPaymentIntentAndCharge</span>(<span class="hljs-params">amount, customer, payment_method</span>) </span>{
+    <span class="hljs-keyword">const</span> paymentIntent = <span class="hljs-keyword">await</span> _1.stripe.paymentIntents.create({
+        amount,
+        customer,
+        payment_method,
+        <span class="hljs-attr">currency</span>: <span class="hljs-string">'usd'</span>,
+        <span class="hljs-attr">off_session</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">confirm</span>: <span class="hljs-literal">true</span>,
+    });
+    <span class="hljs-keyword">return</span> paymentIntent;
+}
+exports.createPaymentIntentAndCharge = createPaymentIntentAndCharge;
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap" id="sourcemappingurlpayments.js.map">
+  <h1>
+    <a href="#sourcemappingurlpayments.js.map" name="sourcemappingurlpayments.js.map" class="pilcrow"></a>
+sourceMappingURL=payments.js.map
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"></pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

@@ -8,8 +8,7 @@ export async function createStripeCheckoutSession(
     line_items: Stripe.Checkout.SessionCreateParams.LineItem[]
 ) {
 
-    const url = 'http://localhost:3001'; //process.env.WEBAPP_URL;
-
+    const url = process.env.WEBAPP_URL;
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items,

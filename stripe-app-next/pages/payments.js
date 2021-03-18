@@ -45,43 +45,43 @@ function Payments() {
     };
 
     return (
-        <>
-            <h2>Payments</h2>
+        <div className="px-5">
+            <h2 className="text-3xl">Payments</h2>
             <p>
                 One-time payment scenario.
             </p>
-            <div className="well">
+            <div className="pt-2">
                 <PaymentIntentData data={paymentIntent} />
             </div>
 
 
-            <div className="well">
+            <div className="">
                 <h3>Step 1: Create a Payment Intent</h3>
                 <p>
                     Change the amount of the payment in the form, then request a Payment
                     Intent to create context for one-time payment. Min 50, Max 9999999
                 </p>
 
-                <div className="form-inline">
+                <div className="flex justify-center">
                     <input
-                        className="form-control"
+                        className="border-black border-2 rounded px-2 mr-6"
                         type="number"
                         value={amount}
                         disabled={paymentIntent}
                         onChange={(e) => setAmount(e.target.value)}
                     />
                     <button
-                        className="btn btn-success"
+                        className="border-2 border-black rounded p-4"
                         disabled={amount <= 0}
                         onClick={createPaymentIntent}
                         hidden={paymentIntent}>
-                        Ready to Pay ${ (amount / 100).toFixed(2) }
+                        Přpraven zaplatit { (amount / 100).toFixed(2) }Kč
                     </button>
                 </div>
             </div>
-            <hr />
 
-            <form onSubmit={handleSubmit} className="well" hidden={!paymentIntent || paymentIntent.status === 'succeeded' }>
+
+            <form onSubmit={handleSubmit} className="" hidden={!paymentIntent || paymentIntent.status === 'succeeded' }>
                 <h3>Step 2: Submit a Payment Method</h3>
                 <p>Collect credit card details, then submit the payment.</p>
                 <p>
@@ -98,7 +98,7 @@ function Payments() {
                     Pay
                 </button>
             </form>
-        </>
+        </div>
     );
 }
 

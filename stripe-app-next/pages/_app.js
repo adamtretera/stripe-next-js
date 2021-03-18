@@ -1,4 +1,4 @@
-import './index.css';
+import "../styles/globals.css"
 import {Elements} from "@stripe/react-stripe-js";
 import {loadStripe} from "@stripe/stripe-js/pure";
 import Navbar from "../components/Navbar";

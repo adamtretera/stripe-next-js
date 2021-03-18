@@ -23,7 +23,7 @@ const webhookHandlers = {
 
         await userRef
             .update({
-                activePlans: firestore.FieldValue.arrayRemove(data.plan.id),
+                activePlans: firestore.FieldValue.arrayRemove(data.id),
             });
     },
     'customer.subscription.created': async (data: Stripe.Subscription) => {
@@ -33,7 +33,7 @@ const webhookHandlers = {
 
         await userRef
             .update({
-                activePlans: firestore.FieldValue.arrayUnion(data.plan.id),
+                activePlans: firestore.FieldValue.arrayUnion(data.id),
             });
     },
     'invoice.payment_succeeded': async (data: Stripe.Invoice) => {

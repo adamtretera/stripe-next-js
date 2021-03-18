@@ -125,7 +125,7 @@ function SubscribeToPlan(props) {
                 Firestore in realtime.
             </p>
             <AuthCheck fallback={<SignIn />}>
-                <div className="well">
+                <div>
                     <h2>Firestore Data</h2>
                     <p>User's data in Firestore.</p>
                     {user?.uid && <UserData user={user} />}
@@ -133,7 +133,7 @@ function SubscribeToPlan(props) {
 
                 <hr />
 
-                <div className="well">
+                <div>
                     <h3>Step 1: Choose a Plan</h3>
 
                     <button

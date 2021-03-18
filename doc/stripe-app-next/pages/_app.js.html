@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>_app.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../";
+    var thisFile = "stripe-app-next\\pages\\_app.js";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>_app.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">'./index.css'</span>;
+<span class="hljs-keyword">import</span> {Elements} <span class="hljs-keyword">from</span> <span class="hljs-string">"@stripe/react-stripe-js"</span>;
+<span class="hljs-keyword">import</span> {loadStripe} <span class="hljs-keyword">from</span> <span class="hljs-string">"@stripe/stripe-js/pure"</span>;
+<span class="hljs-keyword">import</span> Navbar <span class="hljs-keyword">from</span> <span class="hljs-string">"../components/Navbar"</span>;
+<span class="hljs-keyword">import</span> { FirebaseAppProvider } <span class="hljs-keyword">from</span> <span class="hljs-string">'reactfire'</span>;
+<span class="hljs-keyword">import</span> {firebaseConfig} <span class="hljs-keyword">from</span> <span class="hljs-string">"./api/firebase"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> stripePromise = loadStripe(<span class="hljs-string">"pk_test_51IUVQQLaWxuHEV6M2VURAkjduJsWJ8HWfNeSbq86S5zR1wVBSKQHEXnNy0l8Mf80VYymQCkjt8jrLeSEKXtnzwkV002NwZDpTE"</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">MyApp</span>(<span class="hljs-params">{ Component, pageProps }</span>) </span>{
+
+  <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"bg-white bg rounded-2xl shadow-2xl border-2 border-black "</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">FirebaseAppProvider</span> <span class="hljs-attr">firebaseConfig</span>=<span class="hljs-string">{firebaseConfig}</span>&gt;</span>
+                      <span class="hljs-tag">&lt;<span class="hljs-name">Elements</span> <span class="hljs-attr">stripe</span>=<span class="hljs-string">{stripePromise}</span>&gt;</span>
+                          <span class="hljs-tag">&lt;<span class="hljs-name">Navbar</span>/&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">Component</span> {<span class="hljs-attr">...pageProps</span>} /&gt;</span>
+                      <span class="hljs-tag">&lt;/<span class="hljs-name">Elements</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">FirebaseAppProvider</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+
+  )
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyApp
+
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

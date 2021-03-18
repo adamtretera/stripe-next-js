@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>api.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../";
+    var thisFile = "stripe\\lib\\api.js";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+      <div class="heading h1">
+        <a href="#sourcemappingurlapi.js.map">sourceMappingURL=api.js.map</a>
+      </div>
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>api.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-meta">"use strict"</span>;
+<span class="hljs-keyword">var</span> __importDefault = (<span class="hljs-keyword">this</span> &amp;&amp; <span class="hljs-keyword">this</span>.__importDefault) || <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">mod</span>) </span>{
+    <span class="hljs-keyword">return</span> (mod &amp;&amp; mod.__esModule) ? mod : { <span class="hljs-string">"default"</span>: mod };
+};
+<span class="hljs-built_in">Object</span>.defineProperty(exports, <span class="hljs-string">"__esModule"</span>, { <span class="hljs-attr">value</span>: <span class="hljs-literal">true</span> });
+exports.app = <span class="hljs-keyword">void</span> <span class="hljs-number">0</span>;
+<span class="hljs-keyword">const</span> express_1 = __importDefault(<span class="hljs-built_in">require</span>(<span class="hljs-string">"express"</span>));
+exports.app = express_1.default();
+<span class="hljs-keyword">const</span> cors_1 = __importDefault(<span class="hljs-built_in">require</span>(<span class="hljs-string">"cors"</span>));
+<span class="hljs-keyword">const</span> firebase_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./firebase"</span>);
+<span class="hljs-keyword">const</span> checkout_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./checkout"</span>);
+<span class="hljs-keyword">const</span> payments_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./payments"</span>);
+<span class="hljs-keyword">const</span> cutomers_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./cutomers"</span>);
+<span class="hljs-keyword">const</span> billing_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./billing"</span>);
+<span class="hljs-keyword">const</span> webhooks_1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./webhooks"</span>);
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2"></a>
+</div>
+<p>//// MIDDLEWARE  //////
+Allows cross origin requests</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.use(cors_1.default({ <span class="hljs-attr">origin</span>: <span class="hljs-literal">true</span> }));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3"></a>
+</div>
+<p>Sets rawBody for webhook handling</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.use(express_1.default.json({
+    <span class="hljs-attr">verify</span>: <span class="hljs-function">(<span class="hljs-params">req, res, buffer</span>) =&gt;</span> (req[<span class="hljs-string">'rawBody'</span>] = buffer),
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4"></a>
+</div>
+<p>Decodes the Firebase JSON Web Token</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.use(decodeJWT);
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Decodes the JSON Web Token sent via the frontend app
+Makes the currentUser (firebase) data available on the body.</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">decodeJWT</span>(<span class="hljs-params">req, res, next</span>) </span>{
+    <span class="hljs-keyword">var</span> _a, _b;
+    <span class="hljs-keyword">if</span> ((_b = (_a = req.headers) === <span class="hljs-literal">null</span> || _a === <span class="hljs-keyword">void</span> <span class="hljs-number">0</span> ? <span class="hljs-keyword">void</span> <span class="hljs-number">0</span> : _a.authorization) === <span class="hljs-literal">null</span> || _b === <span class="hljs-keyword">void</span> <span class="hljs-number">0</span> ? <span class="hljs-keyword">void</span> <span class="hljs-number">0</span> : _b.startsWith(<span class="hljs-string">'Bearer '</span>)) {
+        <span class="hljs-keyword">const</span> idToken = req.headers.authorization.split(<span class="hljs-string">'Bearer '</span>)[<span class="hljs-number">1</span>];
+        <span class="hljs-keyword">try</span> {
+            <span class="hljs-keyword">const</span> decodedToken = <span class="hljs-keyword">await</span> firebase_1.auth.verifyIdToken(idToken);
+            req[<span class="hljs-string">'currentUser'</span>] = decodedToken;
+        }
+        <span class="hljs-keyword">catch</span> (err) {
+            <span class="hljs-built_in">console</span>.log(err);
+        }
+    }
+    next();
+}
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6"></a>
+</div>
+<p>/// HELPERS /////</p>
+<div class="dox">
+<div class="summary">
+<p>Validate the stripe webhook secret, then call the handler for the event type</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">runAsync</span>(<span class="hljs-params">callback</span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">req, res, next</span>) =&gt;</span> {
+        callback(req, res, next).catch(next);
+    };
+}
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Throws an error if the currentUser does not exist on the request</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">validateUser</span>(<span class="hljs-params">req</span>) </span>{
+    <span class="hljs-keyword">const</span> user = req[<span class="hljs-string">'currentUser'</span>];
+    <span class="hljs-keyword">if</span> (!user) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'You must be logged in to make this request. i.e Authroization: Bearer &lt;token&gt;'</span>);
+    }
+    <span class="hljs-keyword">return</span> user;
+}
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8"></a>
+</div>
+<p>/// MAIN API /////
+app.post('/test', (req: Request, res: Response) =&gt; {
+const amount = req.body.amount;
+res.status(200).send({ with_tax: amount * 7 });
+});</p>
+<div class="dox">
+<div class="summary">
+<p>Checkouts</p>
+</div>
+<div class="body">
+</div>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.post(<span class="hljs-string">'/checkouts/'</span>, runAsync(<span class="hljs-keyword">async</span> ({ body }, res) =&gt; {
+    res.send(<span class="hljs-keyword">await</span> checkout_1.createStripeCheckoutSession(body.line_items));
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Payment Intents API</p>
+</div>
+<div class="body">
+</div>
+</div>
+Create a PaymentIntent
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.post(<span class="hljs-string">'/payments'</span>, runAsync(<span class="hljs-keyword">async</span> ({ body }, res) =&gt; {
+    res.send(<span class="hljs-keyword">await</span> payments_1.createPaymentIntent(body.amount));
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Customers and Setup Intents</p>
+</div>
+<div class="body">
+</div>
+</div>
+Save a card on the customer record with a SetupIntent
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.post(<span class="hljs-string">'/wallet'</span>, runAsync(<span class="hljs-keyword">async</span> (req, res) =&gt; {
+    <span class="hljs-keyword">const</span> user = validateUser(req);
+    <span class="hljs-keyword">const</span> setupIntent = <span class="hljs-keyword">await</span> cutomers_1.createSetupIntent(user.uid);
+    res.send(setupIntent);
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11"></a>
+</div>
+<p>Retrieve all cards attached to a customer</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.get(<span class="hljs-string">'/wallet'</span>, runAsync(<span class="hljs-keyword">async</span> (req, res) =&gt; {
+    <span class="hljs-keyword">const</span> user = validateUser(req);
+    <span class="hljs-keyword">const</span> wallet = <span class="hljs-keyword">await</span> cutomers_1.listPaymentMethods(user.uid);
+    res.send(wallet.data);
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Billing and Recurring Subscriptions</p>
+</div>
+<div class="body">
+</div>
+</div>
+Create a and charge new Subscription
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.post(<span class="hljs-string">'/subscriptions/'</span>, runAsync(<span class="hljs-keyword">async</span> (req, res) =&gt; {
+    <span class="hljs-keyword">const</span> user = validateUser(req);
+    <span class="hljs-keyword">const</span> { plan, payment_method } = req.body;
+    <span class="hljs-keyword">const</span> subscription = <span class="hljs-keyword">await</span> billing_1.createSubscription(user.uid, plan, payment_method);
+    res.send(subscription);
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13"></a>
+</div>
+<p>Get all subscriptions for a customer</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.get(<span class="hljs-string">'/subscriptions/'</span>, runAsync(<span class="hljs-keyword">async</span> (req, res) =&gt; {
+    <span class="hljs-keyword">const</span> user = validateUser(req);
+    <span class="hljs-keyword">const</span> subscriptions = <span class="hljs-keyword">await</span> billing_1.listSubscriptions(user.uid);
+    res.send(subscriptions.data);
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-14" id="section-14"></a>
+</div>
+<p>Unsubscribe or cancel a subscription</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.patch(<span class="hljs-string">'/subscriptions/:id'</span>, runAsync(<span class="hljs-keyword">async</span> (req, res) =&gt; {
+    <span class="hljs-keyword">const</span> user = validateUser(req);
+    res.send(<span class="hljs-keyword">await</span> billing_1.cancelSubscription(user.uid, req.params.id));
+}));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-15" id="section-15"></a>
+</div>
+<div class="dox">
+<div class="summary">
+<p>Webhooks</p>
+</div>
+<div class="body">
+</div>
+</div>
+Handle webhooks
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">exports.app.post(<span class="hljs-string">'/hooks'</span>, runAsync(webhooks_1.handleStripeWebhook));
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap" id="sourcemappingurlapi.js.map">
+  <h1>
+    <a href="#sourcemappingurlapi.js.map" name="sourcemappingurlapi.js.map" class="pilcrow"></a>
+sourceMappingURL=api.js.map
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"></pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

@@ -59,7 +59,7 @@ export async function cancelSubscription(
 ) {
     const customer = await getOrCreateCustomer(userId);
     if (customer.metadata.firebaseUID !== userId) {
-        throw Error('Firebase UaID does not match Stripe Customer');
+        throw Error('Firebase UID does not match Stripe Customer');
     }
     const subscription = await stripe.subscriptions.del(subscriptionId);
 
@@ -71,7 +71,7 @@ export async function cancelSubscription(
             .collection('users')
             .doc(userId)
             .update({
-                activePlans: firestore.FieldValue.arrayRemove(subscription.plan.id),
+                activePlans: firestore.FieldValue.arrayRemove(subscription.id),
             });
     }
 

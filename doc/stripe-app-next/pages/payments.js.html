@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>payments.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../";
+    var thisFile = "stripe-app-next\\pages\\payments.js";
+    var defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container">
+    <div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+    
+      <tr>
+        <td class="docs">
+          <h1>payments.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+    
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1"></a>
+</div>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { fetchFromAPI } <span class="hljs-keyword">from</span> <span class="hljs-string">'./api/helpers'</span>;
+<span class="hljs-keyword">import</span> { CardElement, useStripe, useElements } <span class="hljs-keyword">from</span> <span class="hljs-string">'@stripe/react-stripe-js'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Payments</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">const</span> stripe = useStripe();
+    <span class="hljs-keyword">const</span> elements = useElements();
+
+    <span class="hljs-keyword">const</span> [amount, setAmount] = useState(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">const</span> [paymentIntent, setPaymentIntent] = useState();
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2"></a>
+</div>
+<p>Create a payment intent on the server</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    <span class="hljs-keyword">const</span> createPaymentIntent = <span class="hljs-keyword">async</span> (event) =&gt; {
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3"></a>
+</div>
+<p>Clamp amount to Stripe min/max</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">        <span class="hljs-keyword">const</span> validAmount = <span class="hljs-built_in">Math</span>.min(<span class="hljs-built_in">Math</span>.max(amount, <span class="hljs-number">50</span>), <span class="hljs-number">9999999</span>);
+        setAmount(validAmount);
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4"></a>
+</div>
+<p>Make the API Request</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">
+        <span class="hljs-keyword">const</span> pi = <span class="hljs-keyword">await</span> fetchFromAPI(<span class="hljs-string">'payments'</span>, { <span class="hljs-attr">body</span>: { <span class="hljs-attr">amount</span>: validAmount } });
+        setPaymentIntent(pi);
+    };
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5"></a>
+</div>
+<p>Handle the submission of card details</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">    <span class="hljs-keyword">const</span> handleSubmit = <span class="hljs-keyword">async</span> (event) =&gt; {
+        event.preventDefault();
+
+        <span class="hljs-keyword">const</span> cardElement = elements.getElement(CardElement);
+
+</pre>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="docs">
+          <div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6"></a>
+</div>
+<p>Confirm Card Payment</p>
+
+        </td>
+        <td class="code highlight">
+          <pre class="javascript">        <span class="hljs-keyword">const</span> {
+            <span class="hljs-attr">paymentIntent</span>: updatedPaymentIntent,
+            error,
+        } = <span class="hljs-keyword">await</span> stripe.confirmCardPayment(paymentIntent.client_secret, {
+            <span class="hljs-attr">payment_method</span>: { <span class="hljs-attr">card</span>: cardElement },
+        });
+
+        <span class="hljs-keyword">if</span> (error) {
+            <span class="hljs-built_in">console</span>.error(error);
+            error.payment_intent &amp;&amp; setPaymentIntent(error.payment_intent);
+        } <span class="hljs-keyword">else</span> {
+            setPaymentIntent(updatedPaymentIntent);
+        }
+    };
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Payments<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+                One-time payment scenario.
+            <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"well"</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">PaymentIntentData</span> <span class="hljs-attr">data</span>=<span class="hljs-string">{paymentIntent}</span> /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"well"</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>Step 1: Create a Payment Intent<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+                    Change the amount of the payment in the form, then request a Payment
+                    Intent to create context for one-time payment. Min 50, Max 9999999
+                <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"form-inline"</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">input</span>
+                        <span class="hljs-attr">className</span>=<span class="hljs-string">"form-control"</span>
+                        <span class="hljs-attr">type</span>=<span class="hljs-string">"number"</span>
+                        <span class="hljs-attr">value</span>=<span class="hljs-string">{amount}</span>
+                        <span class="hljs-attr">disabled</span>=<span class="hljs-string">{paymentIntent}</span>
+                        <span class="hljs-attr">onChange</span>=<span class="hljs-string">{(e)</span> =&gt;</span> setAmount(e.target.value)}
+                    /&gt;
+                    <span class="hljs-tag">&lt;<span class="hljs-name">button</span>
+                        <span class="hljs-attr">className</span>=<span class="hljs-string">"btn btn-success"</span>
+                        <span class="hljs-attr">disabled</span>=<span class="hljs-string">{amount</span> &lt;= <span class="hljs-string">0}</span>
+                        <span class="hljs-attr">onClick</span>=<span class="hljs-string">{createPaymentIntent}</span>
+                        <span class="hljs-attr">hidden</span>=<span class="hljs-string">{paymentIntent}</span>&gt;</span>
+                        Ready to Pay ${ (amount / 100).toFixed(2) }
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">hr</span> /&gt;</span>
+
+            <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">onSubmit</span>=<span class="hljs-string">{handleSubmit}</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"well"</span> <span class="hljs-attr">hidden</span>=<span class="hljs-string">{!paymentIntent</span> || <span class="hljs-attr">paymentIntent.status</span> === <span class="hljs-string">'succeeded'</span> }&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>Step 2: Submit a Payment Method<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Collect credit card details, then submit the payment.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+                    Normal Card: <span class="hljs-tag">&lt;<span class="hljs-name">code</span>&gt;</span>4242424242424242<span class="hljs-tag">&lt;/<span class="hljs-name">code</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+                    3D Secure Card: <span class="hljs-tag">&lt;<span class="hljs-name">code</span>&gt;</span>4000002500003155<span class="hljs-tag">&lt;/<span class="hljs-name">code</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">hr</span> /&gt;</span>
+
+                <span class="hljs-tag">&lt;<span class="hljs-name">CardElement</span> /&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"btn btn-success"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span>&gt;</span>
+                    Pay
+                <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+        <span class="hljs-tag">&lt;/&gt;</span></span>
+    );
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">PaymentIntentData</span>(<span class="hljs-params">props</span>) </span>{
+    <span class="hljs-keyword">if</span> (props.data) {
+        <span class="hljs-keyword">const</span> { id, amount, status, client_secret } = props.data;
+        <span class="hljs-keyword">return</span> (
+            <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>Payment Intent <span class="hljs-tag">&lt;<span class="hljs-name">span</span>
+                    <span class="hljs-attr">className</span>=<span class="hljs-string">{</span>
+                        '<span class="hljs-attr">badge</span> ' + ( <span class="hljs-attr">status</span> === <span class="hljs-string">'succeeded'</span> ? '<span class="hljs-attr">badge-success</span>' <span class="hljs-attr">:</span> '<span class="hljs-attr">badge-secondary</span>')
+                    }&gt;</span>
+          {status}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>
+        ID: {id} <span class="hljs-tag">&lt;<span class="hljs-name">br</span> /&gt;</span>
+        Client Secret: {client_secret} <span class="hljs-tag">&lt;<span class="hljs-name">br</span> /&gt;</span>
+        Amount: {amount} <span class="hljs-tag">&lt;<span class="hljs-name">br</span> /&gt;</span>
+        Status:{status}
+                    <span class="hljs-tag">&lt;<span class="hljs-name">br</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+            <span class="hljs-tag">&lt;/&gt;</span></span>
+        );
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Payment Intent Not Created Yet<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>;
+    }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Payments;
+</pre>
+        </td>
+      </tr>
+    
+  </tbody>
+</table>
+
+  </div>
+</body>
+</html>

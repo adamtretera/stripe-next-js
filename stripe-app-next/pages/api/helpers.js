@@ -1,8 +1,8 @@
 import {auth} from "./firebase";
 
 
-const API = 'http://localhost:3001';
-// const API = 'http://localhost:3333';
+
+const API = 'https://stripe-backend-d23xncgmsq-ew.a.run.app';
 
 /**
  * A helper function to fetch data from your API.
