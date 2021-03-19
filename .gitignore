@@ -29,3 +29,4 @@ yarn-error.log*
 stripe/service-account.json
 # vercel
 .vercel
+.stripe
